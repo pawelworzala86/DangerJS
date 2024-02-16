@@ -17,11 +17,11 @@ import 'mat4s.js'
 
 
 var modelFileName = 'box.binary2'
-//var modelFileNameO = 'model.bin'
+
 
 var vert = 'shaders\box2.vert'
 var frag = 'shaders\box2.frag'
-//var size1 = 0
+
 
 EOL db 10,13,0
 
@@ -31,19 +31,13 @@ var bufferCoordID = 0
 
 
 
-//var projection2 = ?
 var mfovy = 45.0
 var maspect = 1.4
 var mnear = 0.1
 var mfar = 100.0
 
-//var camera2 = ?
 var cameraTranslateVec = [0.0,0.0,-5.0]
 
-//var matrixA = [1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0]
-//var matrixB = ?
-
-//var model2 = ?
 
 
     var projection = [1.3737387097273113,0.0,0.0,0.0,0.0,1.3737387097273113,0.0,0.0,0.0,0.0,-1.02020202020202,-1.0,0.0,0.0,-2.0202020202020203,0.0]
@@ -52,21 +46,20 @@ var cameraTranslateVec = [0.0,0.0,-5.0]
 
     var modelA = [1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0]
     var modelATranslateVec = [0.0,2.5,0.0]
-    //var vertices = [1.0,1.0,0.0,1.0,-1.0,0.0,-1.0,-1.0,0.0,1.0,1.0,0.0,-1.0,-1.0,0.0,-1.0,1.0,0.0]
-    //var coords = [1.0,1.0,1.0,0.0,0.0,0.0,1.0,1.0,0.0,0.0,0.0,1.0]
+
     
     
 
 
-//var fsize = 0
-//var handle = 0
+
+    
 
 
 
 var texName = 'textures\box.jpg'
 var textureIDA = 0
 
-var modelData = 0
+
 var modelSize = 0
 
 var trianglesCount = 0
@@ -80,48 +73,35 @@ function CreateGeometry(){
     textureIDA = MacroLoadTexture(texName)
 
 
-    //printf("dwWidth=%i",dwWidth)
 
-    //modelData = MacroReadFile(modelFileNameO)
-    //handle = CreateFile(addr modelFileName, GENERIC_READ,0,0,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL, 0)
-    //fsize = GetFileSize(handle, 0)
     file.open(&modelFileName)
    
         gl.GenVertexArrays(1, *VAO)
         gl.BindVertexArray(VAO)
 
-        trianglesCount = alloc(8)
+        //trianglesCount = alloc(8)
     //ReadFile(handle, addr trianglesCount, 8, 0, 0)
     file.read(8)
     trianglesCount = file.buffor[0]
     printf(' indices %i  ', trianglesCount)
     
-        //modelSize = alloc(8)
-    //ReadFile(handle, addr modelSize, 8, 0, 0)
+
     file.read(8)
     modelSize = file.buffor[0]
-    //modelData = alloc(modelSize)
-    //ReadFile(handle, modelData, modelSize, 0, 0)
     file.read(modelSize)
-    //modelData = file.buffor
-    //printf(' tris %i  ', modelSize)
 
         gl.GenBuffers(1,*bufferID)
         gl.BindBuffer(gl.ARRAY_BUFFER, bufferID)
         gl.BufferData(gl.ARRAY_BUFFER, modelSize, &file.buffor, gl.STATIC_DRAW)
-        //loadingo model from file
-    
+
         gl.EnableVertexAttribArray(0)
         gl.VertexAttribPointer(0,3,gl.DOUBLE,gl.FALSE, 3*8, 0)
     
-        //modelSize = alloc(8)
-    //ReadFile(handle, addr modelSize, 8, 0, 0)
+
+
     file.read(8)
     modelSize = file.buffor[0]
-    //modelData = alloc(modelSize)
-    //ReadFile(handle, modelData, modelSize, 0, 0)
     file.read(modelSize)
-    //modelData = file.buffor
 
         gl.GenBuffers(1,*bufferCoordID)
         gl.BindBuffer(gl.ARRAY_BUFFER, bufferCoordID)
@@ -149,9 +129,6 @@ function CreateGeometry(){
         printf('%s %f','GEOMCREATED',ttt)
 
 }
-
-//var uniformLocation = 0
-//var nname = 'diffuseTexture'
 
 function Render(){
 
@@ -281,6 +258,3 @@ colorcomathree dd 0.3
 colorcmmasevben dd 0.7
 colorcmmasn dd 0.25
 coloralpha dd 1.0
-
-
-
