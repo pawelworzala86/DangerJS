@@ -4,7 +4,7 @@ class File{
         this.fsize = 0
         this.buffor = 0
     }
-    readRile(fileName){
+    readFile(fileName){
         this.handle = CreateFile(fileName, GENERIC_READ,0,0,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL, 0)
         this.fsize = GetFileSize(this.handle, 0)
         this.buffor = alloc(this.fsize)
