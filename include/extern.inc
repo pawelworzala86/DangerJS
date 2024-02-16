@@ -1,7 +1,4 @@
 
-    include \danger\include\utils.inc
-
-
 
     includelib \masm64\lib64\msvcrt.lib
     externdef scanf: near
@@ -39,7 +36,7 @@
     
 
 
-    includelib \danger\include\FreeImage.lib
+    includelib \DangerJS\include\FreeImage.lib
     externdef FreeImage_OpenMemory: near
     externdef FreeImage_LoadFromMemory: near
     externdef FreeImage_GetWidth: near

@@ -131,33 +131,47 @@ var parseSource = (source)=>{
 
 
 
-    //FOR
-    source = source.replace(/\bfor([\s\S]+?)(?<num>\:[0-9]+)\{([\s\S]+?)(\k<num>)\}/gm,match=>{
-        var head=match.split('(')[1].split(')')[0].trim().split(';')
-        var body=match.split('{')[1]
-        body=body.substring(0,body.length-6)
-        return `${head[0]}
-        while(${head[1]}):5555{
-            ${head[2]}
-            ${body}
-        :5555}`
+    source = source.replace(/function(.*)(?<num>\:[0-9]+)\{([\s\S]+?)(\k<num>)\}/gm,match=>{
+
+        var LOCAL = ''
+
+        //FOR
+        match = match.replace(/\bfor([\s\S]+?)(?<num>\:[0-9]+)\{([\s\S]+?)(\k<num>)\}/gm,match=>{
+            var head=match.split('(')[1].split(')')[0].trim().split(';')
+            var body=match.split('{')[1]
+            body=body.substring(0,body.length-6)
+            return `${head[0]}
+            while(${head[1]}):5555{
+                ${head[2]}
+                ${body}
+            :5555}`
+        })
+
+        //while
+        var whileIndex = 0
+        match = match.replace(/while([\s\S]+?)(?<num>\:[0-9]+)\{([\s\S]+?)(\k<num>)\}/gm,match=>{
+            var head=match.split('(')[1].split(')')[0].trim()
+            var body2=match.split('{')[1]
+            body2=body2.substring(0,body2.length-6)
+            //console.log('WHILE',head,body2)
+            whileIndex++
+            LOCAL+=`LOCAL while${whileIndex}\n`
+            return `while${whileIndex}:
+            ${body2}
+            if(${head}):4444{
+                jmp while${whileIndex}
+            :4444}`
+        })
+
+        var first = match.split('{')[0]
+        var rest = match.split('{')
+        rest[0]=first
+        rest[1]='\n'+LOCAL+'\n'+rest[1]
+
+        return rest.join('{')
+
     })
 
-
-    //while
-    var whileIndex = 0
-    source = source.replace(/while([\s\S]+?)(?<num>\:[0-9]+)\{([\s\S]+?)(\k<num>)\}/gm,match=>{
-        var head=match.split('(')[1].split(')')[0].trim()
-        var body=match.split('{')[1]
-        body=body.substring(0,body.length-6)
-        //console.log('WHILE',head,body)
-        whileIndex++
-        return `.while${whileIndex}:
-        ${body}
-        if(${head}):4444{
-            jmp .while${whileIndex}
-        :4444}`
-    })
 
 
 
@@ -592,6 +606,7 @@ ${name} dq ${data}
             for(const local of locals){
                 body=body.replace(new RegExp('('+local+')','gm'),name+'_$1')
             }
+
             if(['SystemInit','SystemDestroy','SystemRender'].includes(name)){
                 return `.code
     ${name} proc ${params}
@@ -852,15 +867,15 @@ var sourceToS = `include \\masm64\\include64\\masm64rt.inc
 include \\masm64\\include64\\opengl32.inc
 include \\masm64\\include64\\glu32.inc
 
-include \\danger\\include\\opengl.inc
-include \\danger\\include\\requires.inc
+include \\DangerJS\\include\\opengl.inc
+include \\DangerJS\\include\\requires.inc
 
 includelib \\masm64\\lib64\\opengl32.lib
 includelib \\masm64\\lib64\\glu32.lib
 
-include \\danger\\include\\extern.inc
+include \\DangerJS\\include\\extern.inc
 
-include \\danger\\include\\math.asm
+include \\DangerJS\\include\\math.asm
 
 .data?
 
