@@ -129,8 +129,10 @@ var parseSource = (source)=>{
 
 
 
-
-
+    //function inner replacements
+    var whileIndex = 0
+    var _IFidx = 0
+    var blockIndex = 6675
     source = source.replace(/function(.*)(?<num>\:[0-9]+)\{([\s\S]+?)(\k<num>)\}/gm,match=>{
 
         var LOCAL = ''
@@ -140,15 +142,15 @@ var parseSource = (source)=>{
             var head=match.split('(')[1].split(')')[0].trim().split(';')
             var body=match.split('{')[1]
             body=body.substring(0,body.length-6)
+            blockIndex++
             return `${head[0]}
-            while(${head[1]}):5555{
+            while(${head[1]}):${blockIndex}{
                 ${head[2]}
                 ${body}
-            :5555}`
+            :${blockIndex}}`
         })
 
         //while
-        var whileIndex = 0
         match = match.replace(/while([\s\S]+?)(?<num>\:[0-9]+)\{([\s\S]+?)(\k<num>)\}/gm,match=>{
             var head=match.split('(')[1].split(')')[0].trim()
             var body2=match.split('{')[1]
@@ -156,12 +158,64 @@ var parseSource = (source)=>{
             //console.log('WHILE',head,body2)
             whileIndex++
             LOCAL+=`LOCAL while${whileIndex}\n`
+            blockIndex++
             return `while${whileIndex}:
             ${body2}
-            if(${head}):4444{
+            if(${head}):${blockIndex}{
                 jmp while${whileIndex}
-            :4444}`
+            :${blockIndex}}`
         })
+        //fs.writeFileSync('./cache/if.js',match)
+        //var _IFidx = 0
+        var __IF=(oper,var1,var2)=>{
+            var regexpr=new RegExp('if\\(([\\w]+)['+oper+']+([\\w]+)\\)(?<num>\\:[0-9]+)\\{([\\s\\S]+?)(\\k<num>)\\}else(?<num2>\\:[0-9]+)\\{([\\s\\S]+?)(\\k<num2>)\\}','gm')
+            match=match.replace( regexpr, mmm=>{
+                //_IFidx++
+                //source=source.replace( regexpr, mmm=>{
+                    //var params = regexpr.exec(mmm)
+                    var head = mmm.split('(')[1].split(')')[0]
+                    var left = head.split(oper.replace(/\\/gm,''))[0]
+                    var right = head.split(oper.replace(/\\/gm,''))[1]
+                    var body1 = mmm.split('{')[1].split('}')[0]
+                    var body2 = mmm.split('{')[2].split('}')[0]
+                    _IFidx++
+                    LOCAL+=`LOCAL if${_IFidx}\n`
+                    LOCAL+=`LOCAL else${_IFidx}\n`
+                    LOCAL+=`LOCAL endif${_IFidx}\n`
+                    LOCAL+=`LOCAL else${_IFidx}\n`
+                    return 'mov rax, '+left+'\nmov rbx, '+right+'\ncmp rax, rbx\n'+var1+' if'+_IFidx
+                    +'\n'+var2+' else'+_IFidx+'\njmp .endif'+_IFidx+'\n.if'
+                    +_IFidx+':\n'+body1+'jmp endif'+_IFidx+'\nelse'+_IFidx+':\n'+body2+'\nendif'+_IFidx+':'
+                //})
+            })
+            var regexpr=new RegExp('if\\(([\\w]+)'+oper+'([\\w]+)\\)(?<num>\\:[0-9]+)\\{([\\s\\S]+?)(\\k<num>)\\}','gm')
+            //console.log('if',regexpr)
+            match=match.replace( regexpr, mmm=>{
+                _IFidx++
+                //console.log('mmm',mmm)
+                //source=source.replace( regexpr,mmm=>{
+                    //var params = regexpr.exec(mmm)
+                    var head = mmm.split('(')[1].split(')')[0]
+                    var left = head.split(oper.replace(/\\/gm,''))[0]
+                    var right = head.split(oper.replace(/\\/gm,''))[1]
+                    var body = mmm.split('{')[1].split('}')[0]
+                    //console.log('OOOOO',regexpr,params)
+                    //console.log('left',left,right)
+                    _IFidx++
+                    LOCAL+=`LOCAL if${_IFidx}\n`
+                    LOCAL+=`LOCAL endif${_IFidx}\n`
+                    return 'mov rax, '+left+'\nmov rbx, '+right+'\ncmp rax, rbx\n'+var1
+                    +' if'+_IFidx+'\njmp endif'+_IFidx+'\nif'
+                    +_IFidx+':\n'+body+'\nendif'+_IFidx+':'
+                //})
+            })
+        }
+        __IF('\\=\\=\\=','je','jne')
+        __IF('\\=\\=','je','jne')
+        __IF('\\<','jl','jnl')
+        __IF('\\!\\=','jne','je')
+        __IF('\\>','jg','jng')
+
 
         var first = match.split('{')[0]
         var rest = match.split('{')
@@ -171,6 +225,7 @@ var parseSource = (source)=>{
         return rest.join('{')
 
     })
+    //fs.writeFileSync('./cache/if.js',source)
 
 
 
@@ -559,24 +614,7 @@ ${name} dq ${data}
 
 
 
-    var _IFidx = 0
-    var __IF=(oper,var1,var2)=>{
-        var regexpr=new RegExp('if\\(([\\w]+)['+oper+']+([\\w]+)\\)(?<num>\\:[0-9]+)\\{([\\s\\S]+?)(\\k<num>)\\}else(?<num2>\\:[0-9]+)\\{([\\s\\S]+?)(\\k<num2>)\\}','gm')
-        source.replace( regexpr, match=>{
-            _IFidx++
-            source=source.replace( regexpr, 'mov rax, $1\nmov rbx, $2\ncmp rax, rbx\n'+var1+' .if'+_IFidx+'\n'+var2+' .else'+_IFidx+'\njmp .endif'+_IFidx+'\n.if'+_IFidx+':\n$4jmp .endif'+_IFidx+'\n.else'+_IFidx+':\n$7\n.endif'+_IFidx+':')
-        })
-        var regexpr=new RegExp('if\\(([\\w]+)['+oper+']+([\\w]+)\\)(?<num>\\:[0-9]+)\\{([\\s\\S]+?)(\\k<num>)\\}','gm')
-        source.replace( regexpr, match=>{
-            _IFidx++
-            source=source.replace( regexpr, 'mov rax, $1\nmov rbx, $2\ncmp rax, rbx\n'+var1+' .if'+_IFidx+'\njmp .endif'+_IFidx+'\n.if'+_IFidx+':\n$4\n.endif'+_IFidx+':')
-        })
-    }
-    __IF('\\=\\=\\=','je','jne')
-    __IF('\\=\\=','je','jne')
-    __IF('\\<','jl','jnl')
-    __IF('\\!\\=','jne','je')
-    __IF('\\>','jg','jng')
+  
 
 
 
