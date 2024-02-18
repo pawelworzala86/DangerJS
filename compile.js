@@ -167,6 +167,7 @@ var parseSource = (source)=>{
         })
         //fs.writeFileSync('./cache/if.js',match)
         //var _IFidx = 0
+        //if
         var __IF=(oper,var1,var2)=>{
             var regexpr=new RegExp('if\\(([\\w]+)['+oper+']+([\\w]+)\\)(?<num>\\:[0-9]+)\\{([\\s\\S]+?)(\\k<num>)\\}else(?<num2>\\:[0-9]+)\\{([\\s\\S]+?)(\\k<num2>)\\}','gm')
             match=match.replace( regexpr, mmm=>{
@@ -226,6 +227,9 @@ var parseSource = (source)=>{
 
     })
     //fs.writeFileSync('./cache/if.js',source)
+
+    r(/([a-zA-Z0-9]+)\+\+/gm,'inc $1')
+    r(/([a-zA-Z0-9]+)\-\-/gm,'dec $1')
 
 
 
