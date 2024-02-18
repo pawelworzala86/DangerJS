@@ -165,50 +165,38 @@ var parseSource = (source)=>{
                 jmp while${whileIndex}
             :${blockIndex}}`
         })
-        //fs.writeFileSync('./cache/if.js',match)
-        //var _IFidx = 0
+
         //if
         var __IF=(oper,var1,var2)=>{
             var regexpr=new RegExp('if\\(([\\w]+)['+oper+']+([\\w]+)\\)(?<num>\\:[0-9]+)\\{([\\s\\S]+?)(\\k<num>)\\}else(?<num2>\\:[0-9]+)\\{([\\s\\S]+?)(\\k<num2>)\\}','gm')
             match=match.replace( regexpr, mmm=>{
-                //_IFidx++
-                //source=source.replace( regexpr, mmm=>{
-                    //var params = regexpr.exec(mmm)
-                    var head = mmm.split('(')[1].split(')')[0]
-                    var left = head.split(oper.replace(/\\/gm,''))[0]
-                    var right = head.split(oper.replace(/\\/gm,''))[1]
-                    var body1 = mmm.split('{')[1].split('}')[0]
-                    var body2 = mmm.split('{')[2].split('}')[0]
-                    _IFidx++
-                    LOCAL+=`LOCAL if${_IFidx}\n`
-                    LOCAL+=`LOCAL else${_IFidx}\n`
-                    LOCAL+=`LOCAL endif${_IFidx}\n`
-                    LOCAL+=`LOCAL else${_IFidx}\n`
-                    return 'mov rax, '+left+'\nmov rbx, '+right+'\ncmp rax, rbx\n'+var1+' if'+_IFidx
-                    +'\n'+var2+' else'+_IFidx+'\njmp .endif'+_IFidx+'\n.if'
-                    +_IFidx+':\n'+body1+'jmp endif'+_IFidx+'\nelse'+_IFidx+':\n'+body2+'\nendif'+_IFidx+':'
-                //})
+                var head = mmm.split('(')[1].split(')')[0]
+                var left = head.split(oper.replace(/\\/gm,''))[0]
+                var right = head.split(oper.replace(/\\/gm,''))[1]
+                var body1 = mmm.split('{')[1].split('}')[0]
+                var body2 = mmm.split('{')[2].split('}')[0]
+                _IFidx++
+                LOCAL+=`LOCAL if${_IFidx}\n`
+                LOCAL+=`LOCAL else${_IFidx}\n`
+                LOCAL+=`LOCAL endif${_IFidx}\n`
+                LOCAL+=`LOCAL else${_IFidx}\n`
+                return 'mov rax, '+left+'\nmov rbx, '+right+'\ncmp rax, rbx\n'+var1+' if'+_IFidx
+                +'\n'+var2+' else'+_IFidx+'\njmp .endif'+_IFidx+'\n.if'
+                +_IFidx+':\n'+body1+'jmp endif'+_IFidx+'\nelse'+_IFidx+':\n'+body2+'\nendif'+_IFidx+':'
             })
             var regexpr=new RegExp('if\\(([\\w]+)'+oper+'([\\w]+)\\)(?<num>\\:[0-9]+)\\{([\\s\\S]+?)(\\k<num>)\\}','gm')
-            //console.log('if',regexpr)
             match=match.replace( regexpr, mmm=>{
                 _IFidx++
-                //console.log('mmm',mmm)
-                //source=source.replace( regexpr,mmm=>{
-                    //var params = regexpr.exec(mmm)
-                    var head = mmm.split('(')[1].split(')')[0]
-                    var left = head.split(oper.replace(/\\/gm,''))[0]
-                    var right = head.split(oper.replace(/\\/gm,''))[1]
-                    var body = mmm.split('{')[1].split('}')[0]
-                    //console.log('OOOOO',regexpr,params)
-                    //console.log('left',left,right)
-                    _IFidx++
-                    LOCAL+=`LOCAL if${_IFidx}\n`
-                    LOCAL+=`LOCAL endif${_IFidx}\n`
-                    return 'mov rax, '+left+'\nmov rbx, '+right+'\ncmp rax, rbx\n'+var1
-                    +' if'+_IFidx+'\njmp endif'+_IFidx+'\nif'
-                    +_IFidx+':\n'+body+'\nendif'+_IFidx+':'
-                //})
+                var head = mmm.split('(')[1].split(')')[0]
+                var left = head.split(oper.replace(/\\/gm,''))[0]
+                var right = head.split(oper.replace(/\\/gm,''))[1]
+                var body = mmm.split('{')[1].split('}')[0]
+                _IFidx++
+                LOCAL+=`LOCAL if${_IFidx}\n`
+                LOCAL+=`LOCAL endif${_IFidx}\n`
+                return 'mov rax, '+left+'\nmov rbx, '+right+'\ncmp rax, rbx\n'+var1
+                +' if'+_IFidx+'\njmp endif'+_IFidx+'\nif'
+                +_IFidx+':\n'+body+'\nendif'+_IFidx+':'
             })
         }
         __IF('\\=\\=\\=','je','jne')
@@ -226,11 +214,11 @@ var parseSource = (source)=>{
         return rest.join('{')
 
     })
-    //fs.writeFileSync('./cache/if.js',source)
+
 
     r(/([a-zA-Z0-9]+)\+\+/gm,'inc $1')
     r(/([a-zA-Z0-9]+)\-\-/gm,'dec $1')
-
+    r(/([a-zA-Z0-9]+) (\+|\-|\\|\*)\= ([a-zA-Z0-9]+)/gm,'$1=$1$2$3')
 
 
 
@@ -275,14 +263,7 @@ var parseSource = (source)=>{
     
     var index = 0
     var parseMaths=(line,op,name)=>{
-        //var tmp = ' '+source
-        //while(tmp != source){
-           // tmp = source
-
-            //r( /[\ \t]*(\-|\+|\/|\*|\=)[\ \t]*/gm, '$1' )
-
-            line=line.replace( new RegExp('(.*)\\b([a-zA-Z\\_0-9\\[\\]]+)[\ ]+'+op+'[\ ]+([a-zA-Z\\_0-9\\[\\]]+)','gm'), 
-            //'Macro_Math_'+name+'($2,$3,mth'+idx+')\n$1mth'+idx+'' )
+        line=line.replace( new RegExp('(.*)\\b([a-zA-Z\\_0-9\\[\\]]+)[\ ]+'+op+'[\ ]+([a-zA-Z\\_0-9\\[\\]]+)','gm'), 
             match=>{
                 var matched = /(.*)\b([a-zA-Z\_0-9\\[\]]+)[\ ]+([\+\-\*\/])[\ ]+([a-zA-Z\_0-9\[\]]+)/gm.exec(match)
                 index++
@@ -291,25 +272,7 @@ var parseSource = (source)=>{
                 }else{
                     return 'Macro_iMath_'+name+'('+matched[2]+','+matched[4]+',mth'+index+')\n'+matched[1]+'mth'+index+''
                 }
-            }
-            )
-
-            /*var idx = 0
-            line=line.replace(/(.*)\b([a-zA-Z\_0-9\\[\]]+)[\ ]+([\+\-\*\/])[\ ]+([a-zA-Z\_0-9\[\]]+)/gm,match=>{
-                var matched = /(.*)\b([a-zA-Z\_0-9\\[\]]+)[\ ]+([\+\-\*\/])[\ ]+([a-zA-Z\_0-9\[\]]+)/gm.exec(match)
-                var oper = 'pomnoz'
-                if(matched[3]=='/'){
-                    oper = 'podziel'
-                }else if(matched[3]=='+'){
-                    oper = 'dodaj'
-                }else if(matched[3]=='-'){
-                    oper = 'odejmnij'
-                }
-                idx++
-                return 'Macro_Math_'+oper+'('+matched[2]+','+matched[4]+',mth'+idx+')\n'+matched[1]+'mth'+idx+''
-            })*/
-
-        //}
+        })
         return line
 
     }
@@ -390,15 +353,6 @@ ${name} dq ${data}
 
 
 
-    //source = source.replace(/\*([a-zA-Z0-9\_]+)/gm,'addr $1')
-
-    //source = source.replace(/^[a-zA-Z0-9]+\.[a-zA-Z0-9]+$/gm,match=>{
-        //const data = Deno.readTextFileSync('./source/'+match);
-        //const data = fs.readFileSync('./source/'+match).toString()
-        //return parseSource(data)
-    //})
-
-    //fs.writeFileSync('./cache/dump1.js',source)
 
 
 
@@ -412,16 +366,6 @@ ${name} dq ${data}
 
 
 
-
-
-
-
-    /*function makeReturn(data){
-        if(data.indexOf('return')==-1){
-            data=data+'\nreturn qword ptr self\n'
-        }
-        return data
-    }*/
     source = source.replace(/^class([\s\S]+?)(?<num>\:[0-9]+)\{([\s\S]+?)(\k<num>)\}/gm,match=>{
         var name = match.split(' ')[1].replace('{','').trim().split(':')[0]
         console.log('name:::',name)
@@ -488,8 +432,6 @@ ${name} dq ${data}
         console.log('params',params)
         OBJ.params.push(params[1])
         return `.data?\n    ${params[1]} label ${params[4].replace('()','')}`
-    //${OBJ.fields.join('\n        ')}
- //       `
     })
     for(const key of Object.keys(OBJECTS)){
         var OBJ = OBJECTS[key]
@@ -502,106 +444,7 @@ ${name} dq ${data}
             })
         }
     }
-    
-    //fs.writeFileSync('./cache/dump2.js',source)
-
     r(/this/gm,'self')
-
-    /*source = source.replace(/^class([\s\S]+?)(?<num>\:[0-9]+)\{([\s\S]+?)(\k<num>)\}/gm,match=>{
-        var name = match.split(' ')[1].replace('{','').trim().split(':')[0]
-        //console.log('CLASS', name)
-        var fields = []
-        match.replace(/constructor\(\)(?<num>\:[0-9]+)\{([\s\S]+?)(\k<num>)\}/gm,mmm=>{
-            mmm.replace(/this\.(.*)/gm,m=>{
-                var field=m.split('=')[0].replace('this.','').trim()
-                var value=m.split('=')[1].trim()
-                //console.log('field', field,value)
-                fields.push([field,value])
-            })
-        })
-        var size=fields.length*8
-        CLASSES[name] = {fields,size,objs:[]}
-        var funcs={}
-        match.replace(/[a-zA-Z0-9]+\(.*(?<num>\:[0-9]+)\{([\s\S]+?)(\k<num>)\}/gm,mmm=>{
-            var fname=mmm.split('(')[0].trim().substring(-5)
-            var params=mmm.split('(')[1].split(')')[0].trim()
-            var data=mmm.split('{')[1]
-            //try{
-            data=data.substring(0,data.length-6)
-            //}catch(e){}
-            //console.log('DATA:::',fname,data)
-            if(fname.indexOf('constructor')>-1){
-                data='\nmov self, alloc('+CLASSES[name].size+')\n'+data
-            }
-            funcs[fname] = {data:data,params}
-            return ''
-        })
-        //console.log('funcs',funcs)
-        var functions = []
-        for(const func of Object.keys(funcs)){
-            var FUNC = funcs[func]
-            var data = FUNC.data
-            var params = FUNC.params
-            params=params.length?(','+params):''
-            var index = 0
-            for(var n of fields){
-                n=n[0]
-                //var n=funcs2[key].split(' ')[0]
-                //console.log('N',n)
-                //try{
-                data=data.replace(new RegExp('this\\.'+n,'gm'),'qword ptr self \\+ '+index*8)
-                //}catch(e){}
-                index++
-            }
-            try{
-            data = data.replace(/this\.([a-zA-Z0-9\_]+)\(/gm,name+'_$1(self,')
-        }catch(e){}
-            //console.log(data)
-            functions.push('function '+name+'_'+func+'(this'+params+'){\n'+data+'\n}\n')
-        }
-        //console.log('functions',functions)
-        return functions.join('\n')
-    })
-    //console.log('CLASSES',CLASSES)
-    source = source.replace(/var [a-zA-Z0-9]+ = new [a-zA-Z0-9]+\(\)/gm,match=>{
-        var clsName = match.split(' ')[4].replace('()','')
-        var obj = match.split(' ')[1]
-        CLASSES[clsName].objs.push(obj)
-        //console.log('clsName',clsName)
-        //var size = CLASSES[clsName].size
-        var val = CLASSES[clsName].fields.map(param=>param[1]).join(',')
-        return '.data\n'+obj+' dq '+val+' '
-    })
-    for(const key of Object.keys(CLASSES)){
-        var CLS = CLASSES[key]
-        for(const obj of CLS.objs){
-            r(new RegExp(obj+'\\.(.*)\\(','gm'),key+'_$1('+obj+',')
-            r(new RegExp(obj+'\\[([0-9]+)\\]\\.(.*)\\(','gm'),key+'_$2('+obj+'[$1],')
-        }
-    }
-    r(/this/gm,'self')
-    /*for(const key of Object.keys(CLASSES)){
-        var CLS = CLASSES[key]
-        for(const obj of CLS.objs){
-    r(new RegExp('('+obj+'\\_.*)\\((.*)\\[(.*)\\]','gm'),match=>{
-        var pref = match.split('[')[0]
-        var num = parseInt(match.split('[')[1].split(']')[0].trim())
-        return pref+'['+(num+2)+']'
-    })
-}}*/
-    /*for(const key of Object.keys(CLASSES)){
-        var CLS = CLASSES[key]
-        var idx = 0
-        for(const obj of CLS.objs){
-        for(const field of CLS.fields){
-            console.log('field',field)
-            r(new RegExp('^('+obj+')\\.'+field[0]+'\\[(.*)\\]','gm'),'qword ptr $1 + qword ptr '+idx+' + $2*8')
-            r(new RegExp('^(.*)('+obj+')\\.'+field[0],'gm'),'$1qword ptr $2 + '+idx+'')
-            r(new RegExp('^(.*)('+obj+')\\[(.*)\\]\\.'+field[0],'gm'),'lea rax, qword ptr $2 + '+idx+'\n$1qword ptr [rax + $3*8]')
-            idx+=8
-            //qword ptr self + qword ptr 8 + 56
-        }}
-    }*/
 
 
 
@@ -619,17 +462,6 @@ ${name} dq ${data}
 
 
   
-
-
-
-
-
-
-    
-
-
-
-
 
     function replaceFunctionZ(regex,param){
         source = source.replace(regex,match=>{
@@ -719,56 +551,8 @@ ${name} db ${data},0
 .code`
     })
 
-    /*source = source.replace(/function start\(\)(?<num>\:[0-9]+)\{([\s\S]+?)(\k<num>)\}/gm,match=>{
-        return match.replace(/\{/gm,`{
-rcall defaultContructors
-`).replace(/(\:[0-9]+)\}/gm,`ExitProcess(0)
-$1}`)
-    })*/
-
-    /*source = source.replace(/\([a-zA-Z0-9\,\_]+?\)\{/gm,match=>{
-        match = match.replace(/\)/gm,':QWORD)')
-        match = match.replace(/\,/gm,':QWORD,')
-        return match
-    })*/
-
-    /*function replaceFunction(regex,param){
-        source = source.replace(regex,match=>{
-            //console.log('FNC::::',match)
-            var name = /([a-zA-Z0-9\_]+)\(/gm.exec(match.replace('function ',''))[1]
-            var params = param?/\(([\s\S]+?)\)/gm.exec(match)[1]:''
-            var body = /\{([\s\S]+?)\}/gm.exec(match)[1]
-            var locals = []
-            body=body.replace(/([a-zA-Z0-9\_]+)\ (dq|dd|db)/gm,mmm=>{
-                var nm = mmm.split(' ')[0]
-                locals.push(nm)
-                return mmm
-            })
-            //console.log('LOCALS',locals)
-            for(const local of locals){
-                body=body.replace(new RegExp('('+local+')','gm'),name+'_$1')
-            }
-            FUNCTIONS.push(name)
-            return `.code
-    ${name} proc ${params}
-    ${body}
-        ret
-    ${name} endp
-    .data`
-        })
-    }
 
 
-    replaceFunction(/function\ ([a-zA-Z0-9\_]+)\(\)(?<num>\:[0-9]+)\{([\s\S]+?)(\k<num>)\}/gm)
-    replaceFunction(/function\ ([a-zA-Z0-9\_]+)\(([\s\S]+?)\)(?<num>\:[0-9]+)\{([\s\S]+?)(\k<num>)\}/gm, true)
-    replaceFunction(/function\ ([a-zA-Z0-9\_]+)\(\)\{([\s\S]+?)\}/gm)
-    replaceFunction(/function\ ([a-zA-Z0-9\_]+)\(([\s\S]+?)\)\{([\s\S]+?)\}/gm, true)*/
-
-
-    //fs.writeFileSync('./cache/dump3.js',source)
-
-    //fs.writeFileSync('./cache/dump4.js',source)
-    //console.log('MACROS::::',MACROS)
 
 
 
@@ -800,7 +584,6 @@ $1}`)
     })
 
 
-    //source = source.replace(/start/gm,'entry_point')
 
     source = source.replace(/(.*) \= (.*)/gm,match=>{
         var params = match.split('=').map(v=>v.trim())
@@ -808,7 +591,6 @@ $1}`)
 mov ${params[0]}, rax`
     })
 
-    //source = source.replace(/exit/gm,'ExitProcess')
 
     source = source.replace(/return ([a-zA-Z0-9\_]+)\[([a-zA-Z\_]+)\]/gm,`mov rbx,$1
 mov rcx,$2
@@ -886,12 +668,6 @@ mov [rcx+rbx]
 
 var code = parseSource(sourceOrigin)
 
-/*for(const key of Object.keys(ARRAYS)){
-    var count = ARRAYS[key]
-    defaultContructors += `mov rax,alloc(${count*8})
-mov ${key},rax
-`
-}*/
 
 var entry_point = `    entry_point proc 
 
@@ -939,5 +715,4 @@ prm4 dq ?
     end
 `
 
-//await Deno.writeTextFile('./cache/test.asm',sourceToS);
 fs.writeFileSync('./cache/'+fileName+'.asm', sourceToS)
