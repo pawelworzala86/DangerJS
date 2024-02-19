@@ -205,6 +205,19 @@ var parseSource = (source)=>{
         __IF('\\!\\=','jne','je')
         __IF('\\>','jg','jng')
 
+        //var
+        /*match=match.replace( /var (.*)/gm, mmm=>{
+            var name = mmm.split('=')[0].replace('var','').trim()
+            var value = mmm.split('=')[1].trim()
+            var type = 'QWORD'
+            if((value.indexOf('\'')>-1)||(value.indexOf('"')>-1)){
+                type = 'db'
+                value += ',0'
+            }
+            LOCAL+='LOCAL '+name+':'+type+'\n'
+            return 'mov '+name+', '+value
+        })*/
+
 
         var first = match.split('{')[0]
         var rest = match.split('{')
