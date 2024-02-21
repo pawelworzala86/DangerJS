@@ -1,6 +1,6 @@
 var ttt = '22'
 
-function prt($txt){
+function prt(txt){
     printf('%s',txt)
 }
 
