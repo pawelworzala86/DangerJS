@@ -439,6 +439,15 @@ ${name} dq ${data}
     })
     //fs.writeFileSync('./cache/objected.js',source)
     console.log('OBJECTS',OBJECTS)
+    source = source.replace(/var [a-zA-Z0-9]+ = new [a-zA-Z0-9]+\(([0-9]+)\)/gm,match=>{
+        var params = match.split(' ')
+        var count = parseInt(match.split('(')[1].split(')')[0].trim())
+        var name = match.split('=')[1].split('(')[0].replace('new','').trim()
+        var OBJ=OBJECTS[name]
+        console.log('params',params)
+        OBJ.params.push(params[1])
+        return `.data?\n    ${params[1]} ${name} ${count} dup\\\\({}\\\\)`
+    })
     source = source.replace(/var [a-zA-Z0-9]+ = new [a-zA-Z0-9]+\(\)/gm,match=>{
         var params = match.split(' ')
         var OBJ=OBJECTS[params[4].replace('()','')]
@@ -450,6 +459,11 @@ ${name} dq ${data}
         var OBJ = OBJECTS[key]
         for(const param of OBJ.params){
             //var FUNC = OBJ.funcs[func]
+            source = source.replace(new RegExp(param+'\\[[0-9]+\\]\\.[a-zA-Z0-9\_]+\\(','gm'),match=>{
+                var obj = match.split('.')[0]
+                var func = match.split('.')[1].split('(')[0]
+                return `${key}_${func}(${obj},`
+            })
             source = source.replace(new RegExp(param+'\\.[a-zA-Z0-9\_]+\\(','gm'),match=>{
                 var obj = match.split('.')[0]
                 var func = match.split('.')[1].split('(')[0]
@@ -459,7 +473,7 @@ ${name} dq ${data}
     }
     r(/this/gm,'self')
 
-
+    fs.writeFileSync('./cache/objected2.js',source)
 
 
 
@@ -632,11 +646,11 @@ mov [rcx+rbx]
 
 
     //arrays
-    source = source.replace(/([a-zA-Z0-9\_\.]+)\[([0-9]+)\]/gm,match=>{
+    /*source = source.replace(/([a-zA-Z0-9\_\.]+)\[([0-9]+)\]/gm,match=>{
         var param = match.split('[')[0]
         var index = match.split('[')[1].split(']')[0]
         return `qword ptr ${param} + ${index*8}`
-    })
+    })*/
 
     source = source.replace(/\n, rax/gm,', rax')
 
@@ -674,6 +688,8 @@ mov [rcx+rbx]
     //mrm QWORD PTR [r10+24], a3
 
     //r(/mov rax, invoke/gm,'invoke')
+
+    r(/\\\\/gm,'')
     
     
     return source
