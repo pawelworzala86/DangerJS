@@ -4,15 +4,19 @@ class TestClass{
         this.valA = 2344
         this.array = 0
         this.valB = 666
+        this.lastIdx = 0
     }
     init(){
+        this.constructor()
         mov this.array, alloc(128)
     }
-    set(index,value){
-        mov rbx, index
+    set(value){
+        mov rbx, this.lastIdx
+        this.lastIdx++
         mov rax, value
         mov rcx, qword ptr this.array
         mov qword ptr [rcx+rbx], rax
+        return rbx
     }
     get(index){
         mov rbx, index
@@ -31,7 +35,7 @@ function start(){
 
     obj.init()
 
-    obj.set(idx, val)
+    idx = obj.set(val)
 
     tmp = obj.get(idx)
 

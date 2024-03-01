@@ -8,6 +8,7 @@ const sourceOrigin = fs.readFileSync('./source/'+fileName+'.js').toString()
 var ignoredFunctions = ['alloc','realloc']
 var FUNCTIONS = ['CreateWindow']
 var MACROS = []
+var PROCS = []
 var DATA = []
 var STR = []
 var defaultContructors = ''
@@ -229,9 +230,9 @@ var parseSource = (source)=>{
     })
 
 
-    r(/([a-zA-Z0-9]+)\+\+/gm,'inc $1')
-    r(/([a-zA-Z0-9]+)\-\-/gm,'dec $1')
-    r(/([a-zA-Z0-9]+) (\+|\-|\\|\*)\= ([a-zA-Z0-9]+)/gm,'$1=$1$2$3')
+    r(/([a-zA-Z0-9\_\.]+)\+\+/gm,'inc $1')
+    r(/([a-zA-Z0-9\_\.]+)\-\-/gm,'dec $1')
+    r(/([a-zA-Z0-9\_\.]+) (\+|\-|\\|\*)\= ([a-zA-Z0-9]+)/gm,'$1=$1$2$3')
 
 
 
@@ -276,9 +277,9 @@ var parseSource = (source)=>{
     
     var index = 0
     var parseMaths=(line,op,name)=>{
-        line=line.replace( new RegExp('(.*)\\b([a-zA-Z\\_0-9\\[\\]]+)[\ ]+'+op+'[\ ]+([a-zA-Z\\_0-9\\[\\]]+)','gm'), 
+        line=line.replace( new RegExp('(.*)\\b([a-zA-Z\\_0-9\\[\\]\\.]+)[\ ]+'+op+'[\ ]+([a-zA-Z\\_0-9\\[\\]\\.]+)','gm'), 
             match=>{
-                var matched = /(.*)\b([a-zA-Z\_0-9\\[\]]+)[\ ]+([\+\-\*\/])[\ ]+([a-zA-Z\_0-9\[\]]+)/gm.exec(match)
+                var matched = /(.*)\b([a-zA-Z\_0-9\\[\]\\.]+)[\ ]+([\+\-\*\/])[\ ]+([a-zA-Z\_0-9\[\]\\.]+)/gm.exec(match)
                 index++
                 if((TYPES[matched[2]]==undefined)||((TYPES[matched[2]]=='float')||(matched[2].indexOf('mth')==0))){
                     return 'Macro_Math_'+name+'('+matched[2]+','+matched[4]+',mth'+index+')\n'+matched[1]+'mth'+index+''
@@ -515,7 +516,8 @@ ${name} dq ${data}
                 body=body.replace(new RegExp('('+local+')','gm'),name+'_$1')
             }
 
-            if(['SystemInit','SystemDestroy','SystemRender'].includes(name)){
+            if(['SystemInit','SystemDestroy','SystemRender'].includes(name)||(name.indexOf('Proc')===0)){
+                PROCS.push(name)
                 return `.code
     ${name} proc ${params}
     ${body}
@@ -533,7 +535,9 @@ ${name} dq ${data}
     replaceFunctionZ(/function\ ([a-zA-Z0-9\_]+)\(\)\{([\s\S]+?)\}/gm)
     replaceFunctionZ(/function\ ([a-zA-Z0-9\_]+)\(([\s\S]+?)\)\{([\s\S]+?)\}/gm, true)
 
-
+    for(const PROC of PROCS){
+        r(new RegExp('('+PROC+'\\(.*)','gm'),'rcall $1')
+    }
 
 
     //source = source.replace(/([a-zA-Z0-9]+)\.([a-zA-Z]+)/gm,'$1_$2')
