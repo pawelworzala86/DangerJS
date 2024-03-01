@@ -357,10 +357,17 @@ ${name} dq ${data}
             const name=match.replace('import ','')
             const data = fs.readFileSync('./source/'+name).toString()
             //return parseSource(data)
+            var parts = name.split('/')
+            console.log('parts',parts)
+            if(parts.length>1){
+                try{
+                fs.mkdirSync('./cache/'+parts[0])
+                }catch(e){}
+            }
             fs.writeFileSync('./cache/'+name.replace('.js','.asm'),parseSource(data))
             match=match.replace('.js','.asm')
         }
-        match=match.replace('import','include')
+        match=match.replace('import','include').replace(/\//gm,'\\')
         return match
     })
 
@@ -646,11 +653,11 @@ mov [rcx+rbx]
 
 
     //arrays
-    /*source = source.replace(/([a-zA-Z0-9\_\.]+)\[([0-9]+)\]/gm,match=>{
+    source = source.replace(/([a-zA-Z0-9\_\.]+)\[([0-9]+)\]/gm,match=>{
         var param = match.split('[')[0]
         var index = match.split('[')[1].split(']')[0]
         return `qword ptr ${param} + ${index*8}`
-    })*/
+    })
 
     source = source.replace(/\n, rax/gm,', rax')
 

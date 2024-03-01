@@ -3,7 +3,7 @@ import '\DangerJS\include\window.asm'
 
 
 
-import 'uniform.js'
+import 'opengl/uniform.js'
 
 import 'file.js'
 import 'fs.js'
