@@ -200,7 +200,7 @@ main proc
   ; ---------------------------------
     invoke CreateWindowEx,WS_EX_LEFT or WS_EX_ACCEPTFILES, \
                           ADDR classname,ADDR caption, \
-                          WS_OVERLAPPEDWINDOW or WS_VISIBLE,\
+                          WS_VISIBLE or WS_OVERLAPPEDWINDOW or WS_CLIPCHILDREN or WS_CLIPSIBLINGS,\
                           screen.ileft,screen.itop,\
                           screen.iwidth,screen.iheight,\
                           0,0,hInstance,0

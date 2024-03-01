@@ -170,6 +170,8 @@ function Render(){
     
         gl.DrawArrays(gl.TRIANGLES, 0, trianglesCount)
 
+        printf('render')
+
 }
 
 
