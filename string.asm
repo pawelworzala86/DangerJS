@@ -5,15 +5,15 @@
     include \masm64\include64\opengl32.inc
     include \masm64\include64\glu32.inc
 
-    include \danger\include\opengl.inc
-    include \danger\include\requires.inc
+    include \dangerJS\include\opengl.inc
+    include \dangerJS\include\requires.inc
 
     includelib \masm64\lib64\opengl32.lib
     includelib \masm64\lib64\glu32.lib
 
-    include \danger\include\extern.inc
+    include \dangerJS\include\extern.inc
 
-    include \danger\include\math.asm
+    include \dangerJS\include\math.asm
 
     .data
 
@@ -76,6 +76,15 @@ entry_point proc
 
     StringCompare teA, teB
     invoke printf, "%i", rax
+
+
+
+
+
+    mov bl, byte ptr teA+1
+    invoke printf, "%c", bl
+
+
 
 
     invoke ExitProcess,0
