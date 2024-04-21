@@ -41,4 +41,6 @@ function start(){
 
     printf('OK %i',tmp)
 
+    printf(' %i',obj.valB)
+
 }
