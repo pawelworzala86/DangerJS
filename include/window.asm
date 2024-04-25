@@ -135,15 +135,19 @@ entry_point proc
 
 entry_point endp
 
-;    .data?
-  ;      arr dq ?
-  ;      hThread dq ?
- ;   .code
+    .data?
+        arr dq ?
+        hThread dq ?
+    .code
 
-;TestThread PROC
-   ; invoke printf,"THREDED %s",lf
-   ; ret
-;TestThread ENDP
+TestThread PROC
+    ;invoke printf,"THREDED %s",lf
+    rcall SystemRender
+    invoke	SwapBuffers,hDC
+    fn SleepEx,16,0
+    rcall TestThread
+    ret
+TestThread ENDP
 
 main proc
 
@@ -280,6 +284,8 @@ WndProc proc hWin:QWORD,uMsg:QWORD,wParam:QWORD,lParam:QWORD
 
                 ;invoke SetForegroundWindow, hWin
 
+            mov hThread, rv(CreateThread,0,0, addr TestThread,addr arr,0,0)
+
 
             .return 0
 
@@ -328,13 +334,18 @@ WndProc proc hWin:QWORD,uMsg:QWORD,wParam:QWORD,lParam:QWORD
             ;lea	edx,ps
             ;invoke  BeginPaint
 
+            ;mov hThread, rv(CreateThread,0,0, addr TestThread,addr arr,0,0)
+
             rcall SystemRender
             
             ;invoke  glFlush
 
             invoke	SwapBuffers,hDC
+            
             ;lea	edx,ps
             ;invoke  EndPaint,hWin
+
+            ;rcall SendMessage,hWin,WM_PAINT,0,0
 
         .case WM_MOUSEMOVE
 

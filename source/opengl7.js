@@ -1,9 +1,9 @@
-import '\danger\include\window.asm'
+import '\dangerjs\include\window.asm'
 
 
 
 
-import 'uniform.js'
+import 'opengl/uniform.js'
 
 import 'file.js'
 import 'shader.js'
@@ -14,7 +14,7 @@ import 'mat4s.js'
 
 
 
-var modelFileName = 'box.binary2'
+var modelFileName = 'box.binary3'
 //var modelFileNameO = 'model.bin'
 
 var vert = 'shaders\box2.vert'
@@ -251,6 +251,7 @@ function SystemRender(){
 
     Render()
 
+    //printf('ok')
 
 }
 
