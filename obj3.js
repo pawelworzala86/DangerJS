@@ -94,7 +94,7 @@ function addUInt16(arr){
 }
 
 
-
+addInt64([BigInt(2)])
 
 for(let model of meshes){
 
@@ -110,4 +110,4 @@ for(let model of meshes){
 }
 
 var array8 = new Uint8Array(data)
-fs.writeFileSync('./dist/box.binary3',array8)
+fs.writeFileSync('./dist/box.binary4',array8)
