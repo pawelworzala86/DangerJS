@@ -65,14 +65,37 @@ var cameraTranslateVec = [0.0,0.0,-5.0]
 var texName = 'textures\box.jpg'
 var textureIDA = 0
 
-var modelData = 0
-var modelSize = 0
+
 
 var trianglesCount = 0
 var meshesCount = 0
 
 
 var ttt = 44.44
+
+
+
+var modelData = 0
+var modelSize = 0
+
+function Mesh_ReadSection(){
+    modelSize = alloc(8)
+    ReadFile(handle, addr modelSize, 8, 0, 0)
+    modelData = alloc(modelSize)
+    ReadFile(handle, modelData, modelSize, 0, 0)
+    printf(' tris %i  ', modelSize)
+}
+function setAttributeFromSection(index,ssize){
+    gl.GenBuffers(1,*bufferID)
+        gl.BindBuffer(gl.ARRAY_BUFFER, bufferID)
+        gl.BufferData(gl.ARRAY_BUFFER, modelSize, modelData, gl.STATIC_DRAW)
+        //loadingo model from file
+    
+        gl.EnableVertexAttribArray(index)
+        mov rbx, ssize
+        imul rbx, 8
+        gl.VertexAttribPointer(index,ssize,gl.DOUBLE,gl.FALSE, rbx, 0)
+}
 
 function readMesh(vao){
     gl.GenVertexArrays(1, *vao)
@@ -82,31 +105,35 @@ function readMesh(vao){
     ReadFile(handle, addr trianglesCount, 8, 0, 0)
     printf(' indices %i  ', trianglesCount)
     
-        modelSize = alloc(8)
+       /* modelSize = alloc(8)
     ReadFile(handle, addr modelSize, 8, 0, 0)
     modelData = alloc(modelSize)
     ReadFile(handle, modelData, modelSize, 0, 0)
-    printf(' tris %i  ', modelSize)
+    printf(' tris %i  ', modelSize)*/
+    Mesh_ReadSection()
 
-        gl.GenBuffers(1,*bufferID)
+        /*gl.GenBuffers(1,*bufferID)
         gl.BindBuffer(gl.ARRAY_BUFFER, bufferID)
         gl.BufferData(gl.ARRAY_BUFFER, modelSize, modelData, gl.STATIC_DRAW)
         //loadingo model from file
     
         gl.EnableVertexAttribArray(0)
-        gl.VertexAttribPointer(0,3,gl.DOUBLE,gl.FALSE, 3*8, 0)
+        gl.VertexAttribPointer(0,3,gl.DOUBLE,gl.FALSE, 3*8, 0)*/
+        setAttributeFromSection(0, 3)
     
-        modelSize = alloc(8)
+        /*modelSize = alloc(8)
     ReadFile(handle, addr modelSize, 8, 0, 0)
     modelData = alloc(modelSize)
-    ReadFile(handle, modelData, modelSize, 0, 0)
+    ReadFile(handle, modelData, modelSize, 0, 0)*/
+    Mesh_ReadSection()
 
-        gl.GenBuffers(1,*bufferCoordID)
+       /* gl.GenBuffers(1,*bufferCoordID)
         gl.BindBuffer(gl.ARRAY_BUFFER, bufferCoordID)
         gl.BufferData(gl.ARRAY_BUFFER, modelSize, modelData,gl.STATIC_DRAW)
     
         gl.EnableVertexAttribArray(1)
-        gl.VertexAttribPointer(1,2,gl.DOUBLE,gl.FALSE, 2*8, 0)
+        gl.VertexAttribPointer(1,2,gl.DOUBLE,gl.FALSE, 2*8, 0)*/
+        setAttributeFromSection(1, 2)
 }
 
 function CreateGeometry(){
